@@ -51,6 +51,8 @@
           }
           console.log(link);
         }
+
+        chrome.browserAction.setBadgeText({"text": ""+targetList.length});
         localStorage.targetList = JSON.stringify(targetList); 
         localStorage.newest = JSON.stringify(rx.exec(m[0])[0]);
         localStorage.keywordList = JSON.stringify(keywordList);
