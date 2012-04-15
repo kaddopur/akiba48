@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <meta http-equiv=”Content-Type” content=”text/html; charset=utf-8″ />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script>
+      var targetList = localStorage.targetList? JSON.parse(localStorage.targetList): [];
+      var keywordList = localStorage.keywordList? JSON.parse(localStorage.keywordList): [];
+      
+      $(document).ready(function(){
+        loadTarget();
+        loadKeyword();
+      });
+
+      var loadTarget = function(){
+        var targetHtml = "";
+        for(var i=targetList.length-1; i>=0; i--){
+          targetHtml = targetHtml + "<li>" + targetList[i] + "</li>";
+        }
+        $("#target").html(targetHtml);
+      };
+
+      var loadKeyword = function(){
+        var keywordHtml = "";
+        for(var i=keywordList.length-1; i>=0; i--){
+          keywordHtml += "<li>" + keywordList[i] + "</li>";
+        }
+        $("#keyword").html(keywordHtml);
+      };
+
+      var addKeyword = function(){
+        keywordList.push($("#key").val());
+        localStorage.keywordList = JSON.stringify(keywordList);
+        loadKeyword();
+      }
+    </script>
+
+    <style>
+      #left {
+        float: left;
+        width: 80%;
+        height: 100%;
+      }
+
+      #right {
+        float: right:
+        width: 19%;
+        height: 100%;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div id="left">
+      <div id="target"></div>
+    </div>
+    
+    <div id="right">
+      <input type="TEXT" id="key">
+      <input type="SUBMIT" onclick="addKeyword();">
+      <div id="keyword"></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <meta http-equiv=”Content-Type” content=”text/html; charset=utf-8″ />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script>
+      var CHECK_RATE = 60000;
+
+      chrome.browserAction.onClicked.addListener(function(tab){
+
+        chrome.tabs.create({"url": "result.html"});
+      });
+
+      $(document).ready(function(){
+        checkWebPage();
+        setTimeout(function(){
+          looper();
+        }, CHECK_RATE);
+      });
+
+      var checkWebPage = function(){
+        var url = "http://www.akiba-online.com/forum/main.php?page=jav";
+        $.get(url, function(data){
+          findTitles(data);
+        });
+      };
+
+      var findTitles = function(data){
+
+        rx = /<td class="thead">(.*)<\/a><\/td>/g;        
+        m = data.match(rx);
+
+        var targetList = localStorage.targetList? JSON.parse(localStorage.targetList): [];
+        var newest = localStorage.newest? JSON.parse(localStorage.newest): "";
+        var keywordList = localStorage.keywordList? JSON.parse(localStorage.keywordList): [];
+        console.log("findTitles");
+
+        for(var i=0; i<m.length; i++){
+          rx = /(<a.*<\/a>)/;
+          var link = ncr2c(rx.exec(m[i])[0]);
+          if(link === newest){
+            break;
+          }
+                  
+          for(var j=0; j<keywordList.length; j++){
+            //console.log(keywordList[j].length + keywordList[j] + encodeURI(keywordList[j]));
+
+            if(link.toLowerCase().match(keywordList[j].toLowerCase()) !== null){
+              targetList.push(link);
+              break;
+            }
+          }
+          console.log(link);
+        }
+        localStorage.targetList = JSON.stringify(targetList); 
+        localStorage.newest = JSON.stringify(rx.exec(m[0])[0]);
+        localStorage.keywordList = JSON.stringify(keywordList);
+      };
+
+      var looper = function(){
+        checkWebPage();
+        setTimeout(function(){
+          looper();
+        }, CHECK_RATE);
+      };
+
+      var unicode = function(s){ 
+        var len = s.length; 
+        var rs = ""; 
+        for(var i=0; i<len; i++){
+          rs += "&#"+s.charCodeAt(i)+";"; 
+        } 
+        return rs; 
+      }
+
+      var ncr2c = function(s){
+        var rx = /&#\d+;/g;
+        var m = s.match(rx);
+        if(!m) return s;
+
+        rx = /\d+/;
+        for(var i=0; i<m.length; i++){
+          s = s.replace(m[i], String.fromCharCode(rx.exec(m[i])[0]));
+        }
+        return s;
+      };
+    </script>
+  </head>
+
+  <body>
+    <canvas id="canvas" width="19" height="19"></canvas>
+  </body>
+</html>
